@@ -1,6 +1,6 @@
 <template>
   <section
-    v-if="isLoading || winOption.id === null"
+    v-if="isLoading || winOption?.id === null"
     class="flex m-auto h-screen w-screen flex-col gap-4 items-center justify-center"
   >
     <h1 class="text-3xl">Espere un poco</h1>

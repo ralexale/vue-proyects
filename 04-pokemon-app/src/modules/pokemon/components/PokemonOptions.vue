@@ -2,6 +2,7 @@
   <section>
     <ul class="space-y-4 flex flex-col items-center justify-center">
       <button
+        data-test-id="option-button"
         @click="emit('selectedOption', option.id)"
         :class="{
           correct: blockSelection && option.id === correctOption,
