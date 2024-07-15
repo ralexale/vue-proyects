@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<IndecisionView /> > calls on message when sending a message 1`] = `
+"<div class="bg-gray-100 h-screen flex flex-col max-w-lg mx-auto">
+  <div class="bg-blue-500 p-4 text-white flex justify-between items-center"><span>Persona</span></div>
+  <div data-testid="mock-messages" messages="">Mock ChatMessages</div>
+  <div class="bg-white p-4 flex items-center"><input type="text" placeholder="Type your message..." class="flex-1 border rounded-full px-4 py-2 focus:outline-none"><button class="bg-blue-500 text-white rounded-full p-2 ml-2 hover:bg-blue-600 focus:outline-none"><img src="/icons/chat/sendIcon.svg" alt="send icon"></button></div>
+</div>"
+`;

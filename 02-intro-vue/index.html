@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="my_app">
+      <h1>Batman quotes {{totalQuotes}}</h1>
+      <input type="text" placeholder="add quote" @keypress.enter="addQuote" v-model="newMessage" />
+
+      <div style="display: flex; gap: 10px; margin-top: 10px">
+        <button @click="showAuthor = !showAuthor">hide author</button>
+        <button v-on:click="addQuote('hello', 'world')">add quote</button>
+      </div>
+
+      <hr />
+
+      <ul>
+        <li v-for="({quote, author}, index) in quotes">
+          <span>{{index +1}} - {{quote}}</span>
+          <blockquote v-if="showAuthor">{{author}}</blockquote>
+        </li>
+      </ul>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
