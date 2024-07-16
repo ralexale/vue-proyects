@@ -9,11 +9,18 @@
       </div>
       <nav class="ml-auto space-x-4 flex items-center h-10 sm:space-x-6">
         <div class="flex items-center space-x-4">
+          <RouterLink :to="{ name: 'pokemon', params: { id: 1 } }"> pokemon </RouterLink>
+        </div>
+
+        <div class="h-full border-l border-gray-300"></div>
+
+        <div class="flex items-center space-x-4">
           <RouterLink :to="{ name: 'home' }"> Home </RouterLink>
           <RouterLink to="/features"> Features </RouterLink>
           <RouterLink to="/pricing"> Pricing </RouterLink>
           <RouterLink to="/contact"> Contact </RouterLink>
         </div>
+
         <div class="h-full border-l border-gray-300"></div>
 
         <div class="flex items-center space-x-4">

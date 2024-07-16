@@ -1,3 +1,4 @@
+import isAuthenticatedGuard from '@/modules/auth/guard/is-authenticated.guard';
 import AuthLayout from '@/modules/auth/layouts/AuthLayout.vue';
 import LandingLayout from '@/modules/lading/layouts/LandingLayout.vue';
 import HomePage from '@/modules/lading/pages/HomePage.vue';
@@ -31,6 +32,18 @@ const router = createRouter({
           path: '/contact',
           name: 'contact',
           component: () => import('@/modules/lading/pages/ContactPage.vue'),
+        },
+        {
+          path: '/pokemon/:id',
+          name: 'pokemon',
+
+          // props: true,
+          beforeEnter: [isAuthenticatedGuard],
+          props: (route) => {
+            const id = Number(route.params.id);
+            return isNaN(id) ? { id: 1 } : { id };
+          },
+          component: () => import('@/modules/pokemons/pages/PokemonPage.vue'),
         },
       ],
     },

@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { RouterLink } from 'vue-router';
-</script>
-
 <template>
   <!-- Left: Image -->
   <div class="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2">
@@ -40,7 +36,8 @@ import { RouterLink } from 'vue-router';
       </div>
       <!-- Login Button -->
       <button
-        type="submit"
+        @click="handleLogin"
+        type="button"
         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full"
       >
         Login
@@ -52,3 +49,16 @@ import { RouterLink } from 'vue-router';
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const handleLogin = () => {
+  localStorage.setItem('userId', 'ABC-123');
+  const lastRoute = localStorage.getItem('last-route') || '/';
+
+  router.replace({ path: lastRoute });
+};
+</script>
