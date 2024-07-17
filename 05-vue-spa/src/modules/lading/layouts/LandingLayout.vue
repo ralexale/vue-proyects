@@ -16,6 +16,7 @@
 
         <div class="flex items-center space-x-4">
           <RouterLink :to="{ name: 'home' }"> Home </RouterLink>
+          <!-- <RouterLink exact-active-class="underline" to="/features"> Features </RouterLink> -->
           <RouterLink to="/features"> Features </RouterLink>
           <RouterLink to="/pricing"> Pricing </RouterLink>
           <RouterLink to="/contact"> Contact </RouterLink>
@@ -33,7 +34,13 @@
 
     <!-- Main -->
     <main class="flex-1 flex items-center justify-center">
-      <RouterView />
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+
+      <!-- <RouterView /> -->
     </main>
     <!-- Fin Main -->
 
@@ -46,3 +53,9 @@
     <!-- Fin Footer -->
   </div>
 </template>
+
+<style>
+.router-link-exact-active {
+  @apply underline  transition-all text-blue-400;
+}
+</style>
