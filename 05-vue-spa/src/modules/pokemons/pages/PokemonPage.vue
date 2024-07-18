@@ -23,7 +23,7 @@
 import { computed } from 'vue';
 
 interface Props {
-  id: string;
+  id: number;
 }
 
 const props = defineProps<Props>();

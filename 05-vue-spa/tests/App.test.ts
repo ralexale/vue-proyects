@@ -12,7 +12,7 @@ describe('<App>', () => {
 
     const routerView = wrapper.findComponent({ name: 'RouterView' });
 
-    console.log(routerView.html());
+    // console.log(routerView.html());
 
     expect(routerView.exists()).toBe(true);
   });
