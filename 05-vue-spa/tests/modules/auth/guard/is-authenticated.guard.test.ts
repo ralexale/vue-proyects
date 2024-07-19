@@ -45,6 +45,11 @@ describe('is-authticated.guard', () => {
     expect(setItemSpy).toBeCalledWith('last-route', to.path);
   });
 
+  test('should pass if authenticated', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('ABC-123');
 
-  test('should pass i')
+    await isAuthenticatedGuard(to, from, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
 });
