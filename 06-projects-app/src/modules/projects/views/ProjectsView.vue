@@ -4,49 +4,71 @@
       <!-- head -->
       <thead>
         <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Job</th>
-          <th>Favorite Color</th>
+          <th>Id</th>
+          <th>Proyecto</th>
+          <th>Tareas</th>
+          <th>Avance</th>
         </tr>
       </thead>
       <tbody>
         <!-- row 1 -->
-        <tr>
-          <th>1</th>
-          <td>Cy Ganderton</td>
-          <td>Quality Control Specialist</td>
-          <td>Blue</td>
+        <tr v-for="(project, index) in projectStore.projectList" :key="project.id">
+          <th>{{ index + 1 }}</th>
+          <td>{{ project.name }}</td>
+          <td>{{ project.tasks.length }}</td>
+          <progress class="progress progress-primary w-56" value="10" max="100"></progress>
         </tr>
         <!-- row 2 -->
-        <tr class="hover">
-          <th>2</th>
-          <td>Hart Hagerty</td>
-          <td>Desktop Support Technician</td>
-          <td>Purple</td>
-        </tr>
-        <!-- row 3 -->
-        <tr>
-          <th>3</th>
-          <td>Brice Swyre</td>
-          <td>Tax Accountant</td>
-          <td>Red</td>
-        </tr>
       </tbody>
     </table>
 
-    <fab-button @click="mondalOpen = true">
+    <fab-button @click="modalOpen = true">
       <AddCircle />
+    </fab-button>
+
+    <fab-button @click="customModalOpen = true" position="bottom-left">
+      <CustomIcon />
     </fab-button>
   </div>
 
-  <InputModal :open="mondalOpen" @close="mondalOpen = false" />
+  <InputModal :open="modalOpen" @close="modalOpen = false" @value="onNewValue" />
+
+  <!-- mandamos información para construir el modal -->
+  <CustomModal :open="customModalOpen" @close="customModalOpen = false">
+    <template #header>
+      <h1>titulo del modal</h1>
+    </template>
+    <template #body>
+      <input type="text" placeholder="Escribe aquí tu texto" class="mt-4 input input-primary" />
+    </template>
+    <template #actions>
+      <div class="flex gap-2">
+        <button @click="customModalOpen = false" class="btn">Cerrar</button>
+        <button type="submit" class="btn btn-primary">Aceptar</button>
+      </div>
+    </template>
+  </CustomModal>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue';
+
+import CustomModal from '@/modules/common/components/CustomModal.vue';
 import FabButton from '@/modules/common/components/FabButton.vue';
 import AddCircle from '@/modules/common/components/icons/AddCircle.vue';
 import InputModal from '@/modules/common/components/InputModal.vue';
-import { ref } from 'vue';
+import CustomIcon from '@/modules/common/components/icons/CustomIcon.vue';
+import { useProjectsStore } from '../store/projects.store';
 
-const mondalOpen = ref(false);
+const modalOpen = ref(false);
+const customModalOpen = ref(false);
+
+const projectStore = useProjectsStore();
+
+const onNewValue = (projectName: string) => {
+  projectStore.projectList.push({
+    id: projectStore.projectList.length + 1,
+    name: projectName,
+    tasks: [],
+  });
+};
 </script>

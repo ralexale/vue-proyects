@@ -28,7 +28,7 @@
   <div
     v-if="open"
     class="fixed top-0 left-0 h-screen !w-screen bg-black/30 backdrop-blur-sm transition-all"
-  ></div>
+  />
 </template>
 
 <script lang="ts" setup>
