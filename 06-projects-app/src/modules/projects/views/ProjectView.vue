@@ -1,27 +1,39 @@
 <template>
-  <div class="full p-4 flex flex-col gap-4">
+  <div class="full p-4 flex flex-col gap-4 w-full">
     <section>
       <bread-crums :name="project?.name ?? ''" />
     </section>
 
     <section>
       <div class="overflow-x-auto">
-        <table class="table">
+        <table class="table w-full">
           <!-- head -->
           <thead>
             <tr>
               <th class="w-14">Completada</th>
               <th>Tarea</th>
               <th>Completada en</th>
+              <th>acciones</th>
             </tr>
           </thead>
           <tbody>
             <!-- row 2 -->
-            <tr class="hover">
-              <th>2</th>
-              <td>Hart Hagerty</td>
-              <td>Desktop Support Technician</td>
-              <td>Purple</td>
+            <tr v-for="(task, index) in project?.tasks" :key="task.id" class="hover">
+              <th>{{ index + 1 }}</th>
+              <td>{{ task.name }}</td>
+              <td>{{ task.completedAt ?? 'No completado' }}</td>
+              <td class="flex gap-2">
+                <button
+                  @click="projectStore.deleteTaskFromProject(project?.id!, task.id)"
+                  class="btn btn-square btn-outline"
+                >
+                  <DeleteIcon />
+                </button>
+
+                <button @click="handleOpenEditModal(task)" class="btn btn-square btn-outline">
+                  <EditIcon />
+                </button>
+              </td>
             </tr>
 
             <tr class="hover">
@@ -29,17 +41,38 @@
               <td>
                 <input
                   v-model="inputValue"
-                  @keypress.enter="projectStore.addTaskToProject(inputValue, project?.id!)"
+                  @keypress.enter="handleAddTask"
                   type="text"
                   placeholder="Nueva tarea"
                   class="input input-bordered focus:opacity-100 hover:opacity-100 transition-all opacity-60 w-full"
                 />
               </td>
-
-              <td>Purple</td>
             </tr>
           </tbody>
         </table>
+
+        <CustomModal :open="openModal" @close="openModal = false">
+          <template #header>
+            <h1 class="">Editar tarea</h1>
+          </template>
+
+          <template #body>
+            <input
+              type="text"
+              :value="editInputValue"
+              :v-model="editInputValue"
+              placeholder="Editar Tarea"
+              class="input input-bordered mt-4"
+            />
+          </template>
+
+          <template #actions>
+            <div class="flex gap-2">
+              <button @click="openModal = false" class="btn">Cerrar</button>
+              <button @click="handleEditTask" type="submit" class="btn btn-primary">Aceptar</button>
+            </div>
+          </template>
+        </CustomModal>
       </div>
     </section>
   </div>
@@ -49,18 +82,40 @@
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import BreadCrums from '@/modules/common/components/BreadCrums.vue';
 import { useProjectsStore } from '../store/projects.store';
-import type { Project } from '../interfaces/project.interfaces';
+import BreadCrums from '@/modules/common/components/BreadCrums.vue';
+import CustomModal from '@/modules/common/components/CustomModal.vue';
+import DeleteIcon from '@/modules/common/components/icons/DeleteIcon.vue';
+import EditIcon from '@/modules/common/components/icons/EditIcon.vue';
+import type { Project, Task } from '../interfaces/project.interfaces';
 
 interface Props {
   id: string;
 }
+const currentTask = ref<Task | undefined>();
+const editInputValue = ref('');
 const inputValue = ref('');
 const projectStore = useProjectsStore();
 const router = useRouter();
 const props = defineProps<Props>();
 const project = ref<Project | undefined>();
+const openModal = ref(false);
+
+const handleAddTask = () => {
+  projectStore.addTaskToProject(inputValue.value, props.id);
+  inputValue.value = '';
+};
+
+const handleEditTask = () => {
+  projectStore.editTaskInProject(currentTask.value!, props.id);
+  openModal.value = false;
+};
+
+const handleOpenEditModal = (task: Task) => {
+  editInputValue.value = task.name;
+  currentTask.value = task;
+  openModal.value = true;
+};
 
 watch(
   () => props.id,

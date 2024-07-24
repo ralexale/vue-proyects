@@ -36,7 +36,7 @@
     title="Agrega un proyecto"
     subtitle="Escribe el nombre del proyecto y pulsa aceptar"
     @close="modalOpen = false"
-    @value="projectStore.addProyect"
+    @value="projectStore.addProject"
   />
 
   <!-- mandamos información para construir el modal -->

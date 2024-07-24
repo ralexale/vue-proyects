@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import type { Project } from '../interfaces/project.interfaces';
+import type { Project, Task } from '../interfaces/project.interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { useLocalStorage } from '@vueuse/core';
 
 export const useProjectsStore = defineStore('projects', () => {
   const projects = ref(useLocalStorage<Project[]>('projects', []));
 
-  const addProyect = (projectName: string) => {
+  const addProject = (projectName: string) => {
     if (projectName.length === 0) return;
 
     projects.value.push({
@@ -21,12 +21,32 @@ export const useProjectsStore = defineStore('projects', () => {
     return projects.value.find((p) => p.id === id);
   };
 
-  const addTaskToProject = (taskName: string, id: string) => {
-    const project = getProjectById(id);
+  const addTaskToProject = (taskName: string, projectId: string) => {
+    const project = getProjectById(projectId);
     project?.tasks.push({
       id: uuidv4(),
       name: taskName,
     });
+  };
+
+  const editTaskInProject = (task: Task, projectId: string) => {
+    projects.value.forEach((project) => {
+      if (project.id === projectId) {
+        project.tasks.forEach((t) => {
+          if (t.id === task.id) {
+            t = task;
+          }
+        });
+      }
+    });
+  };
+
+  const deleteTaskFromProject = (projectId: string, taskId: string) => {
+    const project = getProjectById(projectId);
+
+    const index = project?.tasks.findIndex((t) => t.id === taskId);
+
+    project?.tasks.slice(index, 1);
   };
 
   return {
@@ -38,8 +58,10 @@ export const useProjectsStore = defineStore('projects', () => {
     isProjectListEmpty: computed(() => projects.value.length === 0),
 
     // actions
-    addProyect,
+    addProject,
     getProjectById,
     addTaskToProject,
+    deleteTaskFromProject,
+    editTaskInProject,
   };
 });
