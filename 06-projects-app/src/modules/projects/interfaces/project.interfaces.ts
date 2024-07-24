@@ -1,11 +1,11 @@
 export interface Project {
-  id: number;
+  id: string;
   name: string;
   tasks: Task[];
 }
 
 export interface Task {
-  id: number;
+  id: string;
   name: string;
   completedAt?: Date;
 }

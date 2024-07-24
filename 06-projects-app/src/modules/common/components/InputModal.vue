@@ -1,8 +1,8 @@
 <template>
   <dialog id="my_modal_1" class="modal" :open="open">
     <div class="modal-box">
-      <h3 class="text-lg font-bold">Hello!</h3>
-      <p class="py-4">Press ESC key or click the button below to close</p>
+      <h3 class="text-lg font-bold">{{ title }}</h3>
+      <p class="py-4">{{ subtitle }}</p>
       <div class="modal-action">
         <form
           @submit.prevent="submitValue"
@@ -13,11 +13,11 @@
             ref="inputRef"
             type="text"
             v-model="inputValue"
-            placeholder="Nombre del proyecto"
+            :placeholder="placeholder ?? 'Nombre del proyecto'"
             class="input input-bordered w-full max-w-96"
           />
           <div class="flex justify-center gap-4">
-            <button @click="emits('close')" class="btn w-full max-w-96">Cerrar</button>
+            <button class="btn w-full max-w-96">Cerrar</button>
             <button type="submit" class="btn btn-primary w-full max-w-96">Aceptar</button>
           </div>
           <!-- if there is a button in form, it will close the modal -->
@@ -32,13 +32,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 interface Props {
   open: boolean;
+  title: string;
+  subtitle?: string;
+  placeholder?: string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+watch(props, ({ open }) => {
+  open && inputRef.value?.focus();
+});
 
 const emits = defineEmits<{
   close: [void];

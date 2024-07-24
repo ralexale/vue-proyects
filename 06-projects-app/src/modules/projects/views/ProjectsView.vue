@@ -31,7 +31,13 @@
     </fab-button>
   </div>
 
-  <InputModal :open="modalOpen" @close="modalOpen = false" @value="onNewValue" />
+  <InputModal
+    :open="modalOpen"
+    title="Agrega un proyecto"
+    subtitle="Escribe el nombre del proyecto y pulsa aceptar"
+    @close="modalOpen = false"
+    @value="projectStore.addProyect"
+  />
 
   <!-- mandamos información para construir el modal -->
   <CustomModal :open="customModalOpen" @close="customModalOpen = false">
@@ -63,12 +69,4 @@ const modalOpen = ref(false);
 const customModalOpen = ref(false);
 
 const projectStore = useProjectsStore();
-
-const onNewValue = (projectName: string) => {
-  projectStore.projectList.push({
-    id: projectStore.projectList.length + 1,
-    name: projectName,
-    tasks: [],
-  });
-};
 </script>
