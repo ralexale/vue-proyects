@@ -18,13 +18,20 @@
           </thead>
           <tbody>
             <!-- row 2 -->
-            <tr v-for="(task, index) in project?.tasks" :key="task.id" class="hover">
-              <th>{{ index + 1 }}</th>
+            <tr v-for="task in project?.tasks" :key="task.id" class="hover">
+              <th>
+                <input
+                  type="checkbox"
+                  :checked="!!task.completedAt"
+                  class="checkbox checkbox-primary"
+                  @change="projectStore.toggleTask(project?.id!, task.id)"
+                />
+              </th>
               <td>{{ task.name }}</td>
               <td>{{ task.completedAt ?? 'No completado' }}</td>
               <td class="flex gap-2">
                 <button
-                  @click="projectStore.deleteTaskFromProject(project?.id!, task.id)"
+                  @click="projectStore.deleteTaskFromProject(project!.id, task.id)"
                   class="btn btn-square btn-outline"
                 >
                   <DeleteIcon />
@@ -51,7 +58,7 @@
           </tbody>
         </table>
 
-        <CustomModal :open="openModal" @close="openModal = false">
+        <CustomModal :open="openModal">
           <template #header>
             <h1 class="">Editar tarea</h1>
           </template>
@@ -59,8 +66,7 @@
           <template #body>
             <input
               type="text"
-              :value="editInputValue"
-              :v-model="editInputValue"
+              v-model="editInputValue"
               placeholder="Editar Tarea"
               class="input input-bordered mt-4"
             />
@@ -79,43 +85,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { useProjectsStore } from '../store/projects.store';
 import BreadCrums from '@/modules/common/components/BreadCrums.vue';
 import CustomModal from '@/modules/common/components/CustomModal.vue';
 import DeleteIcon from '@/modules/common/components/icons/DeleteIcon.vue';
 import EditIcon from '@/modules/common/components/icons/EditIcon.vue';
-import type { Project, Task } from '../interfaces/project.interfaces';
+import { useTaskManage } from '../composables/useTaskManage';
+import { useProjectsStore } from '../store/projects.store';
 
 interface Props {
   id: string;
 }
-const currentTask = ref<Task | undefined>();
-const editInputValue = ref('');
-const inputValue = ref('');
-const projectStore = useProjectsStore();
 const router = useRouter();
+const projectStore = useProjectsStore();
 const props = defineProps<Props>();
-const project = ref<Project | undefined>();
-const openModal = ref(false);
 
-const handleAddTask = () => {
-  projectStore.addTaskToProject(inputValue.value, props.id);
-  inputValue.value = '';
-};
-
-const handleEditTask = () => {
-  projectStore.editTaskInProject(currentTask.value!, props.id);
-  openModal.value = false;
-};
-
-const handleOpenEditModal = (task: Task) => {
-  editInputValue.value = task.name;
-  currentTask.value = task;
-  openModal.value = true;
-};
+const {
+  handleOpenEditModal,
+  handleEditTask,
+  handleAddTask,
+  project,
+  openModal,
+  editInputValue,
+  inputValue,
+} = useTaskManage(props);
 
 watch(
   () => props.id,
@@ -128,6 +123,4 @@ watch(
     immediate: true,
   },
 );
-
-// const route = useRoute();
 </script>

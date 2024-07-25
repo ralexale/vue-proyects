@@ -1,14 +1,28 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import type { Project, Task } from '../interfaces/project.interfaces';
+import type { Project } from '../interfaces/project.interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import { useLocalStorage } from '@vueuse/core';
 
 export const useProjectsStore = defineStore('projects', () => {
   const projects = ref(useLocalStorage<Project[]>('projects', []));
 
+  const projectsWithCompletion = computed(() => {
+    return projects.value.map((project) => {
+      const taskNumber = project.tasks.length;
+      const completedTasks = project.tasks.filter((task) => !!task.completedAt);
+      const percentageTask = Math.round((completedTasks.length / taskNumber) * 100);
+
+      return {
+        ...project,
+        tasksNumber: taskNumber,
+        completedTasks: percentageTask,
+      };
+    });
+  });
+
   const addProject = (projectName: string) => {
-    if (projectName.length === 0) return;
+    if (projectName.trim().length === 0) return;
 
     projects.value.push({
       id: uuidv4(),
@@ -29,24 +43,36 @@ export const useProjectsStore = defineStore('projects', () => {
     });
   };
 
-  const editTaskInProject = (task: Task, projectId: string) => {
-    projects.value.forEach((project) => {
-      if (project.id === projectId) {
-        project.tasks.forEach((t) => {
-          if (t.id === task.id) {
-            t = task;
-          }
-        });
+  const editTaskInProject = (taskId: string, newName: string, projectId: string) => {
+    const currentProject = getProjectById(projectId);
+    if (!currentProject) return;
+
+    const currentTask = currentProject.tasks.find((t) => t.id === taskId);
+
+    if (!currentTask) return;
+
+    currentTask.name = newName;
+  };
+
+  const deleteTaskFromProject = (projectId: string, taskId: string) => {
+    const currentProject = getProjectById(projectId);
+    const newTasks = currentProject?.tasks.filter((t) => t.id !== taskId);
+
+    projects.value.forEach((p) => {
+      if (p.id === projectId) {
+        p.tasks = newTasks!;
       }
     });
   };
 
-  const deleteTaskFromProject = (projectId: string, taskId: string) => {
+  const toggleTask = (projectId: string, taskId: string) => {
     const project = getProjectById(projectId);
+    if (!project) return;
 
-    const index = project?.tasks.findIndex((t) => t.id === taskId);
+    const task = project?.tasks.find((task) => task.id === taskId);
+    if (!task) return;
 
-    project?.tasks.slice(index, 1);
+    task.completedAt = task.completedAt ? undefined : new Date();
   };
 
   return {
@@ -56,12 +82,13 @@ export const useProjectsStore = defineStore('projects', () => {
     // getters
     projectList: computed(() => [...projects.value]),
     isProjectListEmpty: computed(() => projects.value.length === 0),
-
+    projectsWithCompletion,
     // actions
     addProject,
     getProjectById,
     addTaskToProject,
     deleteTaskFromProject,
     editTaskInProject,
+    toggleTask,
   };
 });
