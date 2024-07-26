@@ -15,7 +15,7 @@
         <tr v-for="(project, index) in projectStore.projectsWithCompletion" :key="project.id">
           <th>{{ index + 1 }}</th>
           <td>{{ project.name }}</td>
-          <td>{{ project.tasks.length }}</td>
+          <td>{{ project.tasksNumber }}</td>
           <progress
             class="progress progress-primary w-56"
             :value="project.completedTasks"
@@ -44,7 +44,7 @@
   />
 
   <!-- mandamos información para construir el modal -->
-  <CustomModal :open="customModalOpen" @close="customModalOpen = false">
+  <CustomModal :open="customModalOpen">
     <template #header>
       <h1>titulo del modal</h1>
     </template>

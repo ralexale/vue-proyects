@@ -11,10 +11,11 @@ export const useProjectsStore = defineStore('projects', () => {
     return projects.value.map((project) => {
       const taskNumber = project.tasks.length;
       const completedTasks = project.tasks.filter((task) => !!task.completedAt);
-      const percentageTask = Math.round((completedTasks.length / taskNumber) * 100);
+      const percentageTask = Math.round((completedTasks.length / taskNumber) * 100) || 0;
 
       return {
-        ...project,
+        id: project.id,
+        name: project.name,
         tasksNumber: taskNumber,
         completedTasks: percentageTask,
       };
