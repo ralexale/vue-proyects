@@ -5,7 +5,7 @@
     <RouterLink :to="`product/${product.id}`">
       <!-- image  -->
       <div class="relative flex items-end overflow-hidden rounded-xl">
-        <img :src="product.images[0]" alt="Hotel Photo" />
+        <img :src="product.images[0]" class="h-[300px] w-full object-cover" alt="Hotel Photo" />
       </div>
 
       <!-- body  -->
