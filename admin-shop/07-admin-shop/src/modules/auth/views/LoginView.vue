@@ -72,7 +72,7 @@ const myForm = reactive({
   remeberMe: false,
 });
 
-const router = useRouter();
+// const router = useRouter();
 const toast = useToast();
 const authStore = useAuthStore();
 
@@ -83,6 +83,8 @@ watchEffect(() => {
     myForm.remeberMe = true;
   }
 });
+
+const router = useRouter();
 
 const onLogin = async () => {
   if (myForm.email === '') {
@@ -102,7 +104,12 @@ const onLogin = async () => {
   const ok = await authStore.login(myForm.email, myForm.password);
 
   if (ok) {
-    return toast.success('Logeado correctamente');
+    toast.success('Logeado correctamente');
+
+    setTimeout(() => {
+      router.replace({ name: 'home' });
+    }, 1000);
+    return;
   }
 
   toast.error('Usuario o contraseña incorrectos');

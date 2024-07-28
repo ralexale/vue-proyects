@@ -1,10 +1,11 @@
 <template>
-  <h1 class="text-2xl font-semibold mb-4">Register</h1>
-  <form action="#" method="POST">
+  <h1 class="text-2xl font-semibold mb-4">Registrarse</h1>
+  <form @submit.prevent="onRegister">
     <!-- Username Input -->
     <div class="mb-4">
-      <label for="name" class="block text-gray-600">Name</label>
+      <label for="name" class="block text-gray-600">Nombre</label>
       <input
+        v-model="registerForm.fullName"
         type="text"
         id="name"
         name="name"
@@ -15,8 +16,9 @@
 
     <!-- Username Input -->
     <div class="mb-4">
-      <label for="username" class="block text-gray-600">Username</label>
+      <label for="username" class="block text-gray-600">Correo</label>
       <input
+        v-model="registerForm.email"
         type="text"
         id="username"
         name="username"
@@ -26,8 +28,9 @@
     </div>
     <!-- Password Input -->
     <div class="mb-4">
-      <label for="password" class="block text-gray-600">Password</label>
+      <label for="password" class="block text-gray-600">Contraseña</label>
       <input
+        v-model="registerForm.password"
         type="password"
         id="password"
         name="password"
@@ -35,25 +38,64 @@
         autocomplete="off"
       />
     </div>
-    <!-- Remember Me Checkbox -->
-    <div class="mb-4 flex items-center">
-      <input type="checkbox" id="remember" name="remember" class="text-blue-500" />
-      <label for="remember" class="text-gray-600 ml-2">Remember Me</label>
-    </div>
+
     <!-- Forgot Password Link -->
     <div class="mb-6 text-blue-500">
-      <a href="#" class="hover:underline">Forgot Password?</a>
+      <a href="#" class="hover:underline">Olvidaste tu contraseña?</a>
     </div>
     <!-- Login Button -->
     <button
       type="submit"
       class="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 w-full"
     >
-      Login
+      Crear cuenta
     </button>
   </form>
   <!-- Sign up  Link -->
   <div class="mt-6 text-blue-500 text-center">
-    <RouterLink :to="{ name: 'login' }" class="hover:underline">Login Here</RouterLink>
+    <RouterLink :to="{ name: 'login' }" class="hover:underline"
+      >¿Ya tienes una cuenta? Inicia sesión</RouterLink
+    >
   </div>
 </template>
+
+<script lang="ts" setup>
+import { reactive } from 'vue';
+import { useAuthStore } from '../stores/auth.store';
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+
+const registerForm = reactive({
+  fullName: '',
+  email: '',
+  password: '',
+});
+const toast = useToast();
+const router = useRouter();
+
+const onRegister = async () => {
+  try {
+    const response = await authStore.register(
+      registerForm.fullName,
+      registerForm.email,
+      registerForm.password,
+    );
+    if (!response.ok) {
+      toast.error(
+        `${response.message[0] && response.message[0]} - ${response.message[1] && response.message[1]}`,
+      );
+      return;
+    }
+
+    toast.success('Registrado correctamente');
+
+    setTimeout(() => {
+      router.replace({ name: 'home' });
+    }, 1000);
+  } catch (error) {
+    toast.error(error as string);
+  }
+};
+</script>
