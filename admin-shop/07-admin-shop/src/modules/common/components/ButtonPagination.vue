@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center py-10 gap-4 bg-gray-100">
     <button
-      @click="$router.push({ query: { page: page - 1 }, path: '/' })"
+      @click="$router.push({ query: { page: page - 1 } })"
       :disabled="isFirstPage"
       class="flex items-center bg-blue-500 px-4 py-1.5 rounded-lg text-white space-x-1.5 disabled:bg-gray-300 hover:bg-blue-600 transition-colors"
     >
@@ -10,7 +10,7 @@
     </button>
 
     <button
-      @click="$router.push({ query: { page: page + 1 }, path: '/' })"
+      @click="$router.push({ query: { page: page + 1 } })"
       :disabled="hasMoreData"
       class="flex items-center bg-blue-500 px-4 py-1.5 rounded-lg text-white space-x-1.5 disabled:bg-gray-300 hover:bg-blue-600 transition-colors"
     >
