@@ -1,6 +1,8 @@
 <template>
   <div class="bg-white px-5 py-2 rounded">
-    <h1 class="text-3xl">Producto: <small class="text-blue-500">nombre</small></h1>
+    <h1 class="text-3xl">
+      Producto: <small class="text-blue-500">{{ product?.title }}</small>
+    </h1>
     <hr class="my-4" />
   </div>
 
@@ -9,7 +11,19 @@
       <!-- Primera parte del formulario -->
       <div class="mb-4">
         <label for="title" class="form-label">Título</label>
-        <input type="text" id="title" class="form-control" />
+        <input
+          type="text"
+          id="title"
+          :class="[
+            'form-control',
+            {
+              'border-red-500': errors.title,
+            },
+          ]"
+          v-model="title"
+          v-bind="titleAttrs"
+        />
+        <span class="text-red-500" v-if="errors.title">{{ errors.title }}</span>
       </div>
 
       <div class="mb-4">
@@ -38,10 +52,18 @@
       </div>
 
       <div class="mb-4">
-        <label for="sizes" class="form-label">Tallas</label>
-        <button type="button" class="bg-blue-100 p-2 rounded w-14 mr-2">XS</button>
-        <button type="button" class="bg-blue-500 text-white p-2 rounded w-14 mr-2">S</button>
-        <button type="button" class="bg-blue-500 text-white p-2 rounded w-14 mr-2">M</button>
+        <Span for="sizes" class="form-label">Tallas</Span>
+
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="size in allSizes"
+            :key="size"
+            type="button"
+            class="bg-blue-500 text-white hover:bg-blue-400 p-2 rounded w-14"
+          >
+            {{ size }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -49,15 +71,14 @@
     <div class="first-col">
       <label for="stock" class="form-label">Imágenes</label>
       <!-- Row with scrollable horizontal -->
-      <div class="flex p-2 overflow-x-auto space-x-8 w-full h-[265px] bg-gray-200 rounded">
-        <div class="flex-shrink-0">
-          <img src="https://via.placeholder.com/250" alt="imagen" class="w-[250px] h-[250px]" />
-        </div>
-
-        <div class="flex-shrink-0">
-          <img src="https://via.placeholder.com/250" alt="imagen" class="w-[250px] h-[250px]" />
+      <div
+        class="flex p-2 overflow-x-auto overflow-y-hidden gap-4 w-full h-[275px] bg-gray-200 rounded"
+      >
+        <div v-for="image in product?.images" :key="image" class="flex-shrink-0">
+          <img :src="image" alt="imagen" class="w-[250px] h-[250px] object-cover" />
         </div>
       </div>
+
       <!-- Upload image -->
       <div class="col-span-2 my-2">
         <label for="image" class="form-label">Subir imagen</label>
@@ -87,6 +108,8 @@
     </div>
   </form>
 </template>
+
+<script src="./product-view.ts" lang="ts"></script>
 
 <style scoped>
 .form-label {

@@ -14,7 +14,7 @@
             </tr>
           </thead>
           <tbody class="text-gray-700">
-            <tr class="odd:bg-gray-200" v-for="(product, index) in products" :key="product.id">
+            <tr class="odd:bg-gray-200" v-for="product in products" :key="product.id">
               <td class="text-left py-3 px-4">
                 <img class="size-10 object-cover" :src="product.images[0]" :alt="product.title" />
               </td>
@@ -26,6 +26,7 @@
                   {{ product.title }}</RouterLink
                 >
               </td>
+
               <td class="text-left py-3 px-4">
                 <span
                   class="text-blue-500 py-1 flex max-w-10 min-w-16 justify-center rounded-full bg-blue-300/70 font-bold"
