@@ -1,8 +1,25 @@
 import { tesloApi } from '@/api/tesloApi';
 import type { Product } from '../interfaces';
 import { getProductImageAction } from './get-product-image.action';
+import { isAxiosError } from 'axios';
 
 export const getProductById = async (id: string): Promise<Product> => {
+  if (id === 'create') {
+    return {
+      id: '',
+      gender: '' as any,
+      title: '',
+      slug: '',
+      description: '',
+      price: 0,
+      stock: 0,
+      images: [],
+      sizes: [],
+      tags: [],
+      user: {} as any,
+    };
+  }
+
   try {
     const { data } = await tesloApi.get<Product>(`/products/${id}`);
 
@@ -10,7 +27,11 @@ export const getProductById = async (id: string): Promise<Product> => {
 
     return data;
   } catch (error) {
-    console.log(error);
+    if (isAxiosError(error)) {
+      console.log(error.response?.data);
+
+      throw new Error('Error getting product');
+    }
     throw new Error(`Error getting product by id: ${id}`);
   }
 };

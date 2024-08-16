@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import 'vue-toastification/dist/index.css';
+import './config/yup';
 
 import App from './App.vue';
 import router from './router';

@@ -41,11 +41,12 @@
     <div class="flex flex-col flex-grow">
       <div class="flex items-center flex-shrink-0 h-16 px-8 border-b border-gray-300">
         <h1 class="text-lg font-medium">{{ authStore.user?.fullName }}</h1>
-        <button
+        <RouterLink
+          to="/admin/products/create"
           class="flex bg-blue-500 text-white items-center justify-center h-10 px-4 ml-auto text-sm font-medium rounded hover:bg-blue-400"
         >
           + New Product
-        </button>
+        </RouterLink>
       </div>
       <div class="flex-grow p-6 overflow-auto bg-gray-200">
         <!-- content -->

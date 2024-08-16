@@ -1,25 +1,18 @@
-import { defineComponent, ref, watchEffect } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { useForm } from 'vee-validate';
-import * as yup from 'yup';
+import { defineComponent, ref, watch, watchEffect } from 'vue';
+import { useMutation, useQuery } from '@tanstack/vue-query';
 
-import { getProductById } from '@/modules/products/actions';
+import { createUpdateProductAction, getProductById } from '@/modules/products/actions';
 import { useRouter } from 'vue-router';
-import type { Product } from '@/modules/products/interfaces';
-
-const validationSchema = yup.object({
-  title: yup.string().required().min(3),
-  slug: yup.string().required(),
-  description: yup.string().required(),
-  price: yup.number().required(),
-  stock: yup.number().min(1).required(),
-  sizes: yup.array().required(),
-  gender: yup.string().required().oneOf(['kid', 'women', 'men']),
-  tags: yup.array().required(),
-  images: yup.array().required(),
-});
+import CustomInput from '@/modules/common/components/CustomInput.vue';
+import CustomTextArea from '@/modules/common/components/CustomTextArea.vue';
+import { useToast } from 'vue-toastification';
+import { formValues } from '../utils';
 
 export default defineComponent({
+  components: {
+    CustomInput,
+    CustomTextArea,
+  },
   props: {
     productId: {
       type: String,
@@ -28,68 +21,108 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
-    const myForm = ref<Product | null>(null);
+    const toast = useToast();
 
     const {
       data: product,
       isError,
       isLoading,
+      refetch,
     } = useQuery({
       queryKey: ['product', { id: props.productId }],
       queryFn: () => getProductById(props.productId),
       retry: false,
     });
-    const { values, defineField, errors } = useForm({
-      validationSchema: validationSchema,
+
+    const {
+      mutate,
+      isSuccess: isUpdateSuccess,
+      data: updatedProduct,
+      isPending,
+    } = useMutation({
+      mutationFn: createUpdateProductAction,
     });
 
-    const [title, titleAttrs] = defineField('title');
-    const [price, priceAttrs] = defineField('price');
-    const [description, descriptionAttrs] = defineField('description');
-    const [slug, slugAttrs] = defineField('slug');
-    const [stock, stockAttrs] = defineField('stock');
-    const [sizes, sizesAttrs] = defineField('sizes');
-    const [gender, genderAttrs] = defineField('gender');
-    const [tags, tagsAttrs] = defineField('tags');
-    const [images, imagesAttrs] = defineField('images');
+    const { resetForm, handleSubmit, ...formv } = formValues();
+
+    const imageFiles = ref<File[]>([]);
+
+    const onSubmit = handleSubmit(async (values) => {
+      const submitValues = {
+        ...values,
+        images: [...values.images, ...imageFiles.value],
+      };
+      mutate(submitValues);
+    });
+
+    const onFileChange = (e: Event) => {
+      const fileInput = e.target as HTMLInputElement;
+      const files = fileInput.files;
+
+      if (!files || files.length === 0) return;
+
+      for (const imageFile of files) {
+        imageFiles.value.push(imageFile);
+      }
+    };
 
     watchEffect(() => {
       if (!isLoading.value && isError.value) {
         router.replace({ name: 'admin-products' });
       }
-
-      myForm.value = product.value!;
     });
+
+    watch(
+      product,
+      () => {
+        if (!product) return;
+
+        resetForm({
+          values: product.value,
+        });
+      },
+      {
+        deep: true,
+        immediate: true,
+      },
+    );
+
+    watch(isUpdateSuccess, (value) => {
+      if (!value) return;
+
+      if (props.productId === 'create') {
+        router.replace(`/admin/products/${updatedProduct.value?.id}`);
+        toast.success('Producto creado correctamente');
+        return;
+      }
+      toast.success('Producto actualizado correctamente');
+      resetForm({
+        values: updatedProduct.value,
+      });
+      imageFiles.value = [];
+    });
+
+    watch(
+      () => props.productId,
+      () => refetch(),
+    );
 
     return {
       // properties
       product,
-      myForm,
-      values,
-      title,
-      titleAttrs,
-      price,
-      priceAttrs,
-      description,
-      descriptionAttrs,
-      slug,
-      slugAttrs,
-      stock,
-      stockAttrs,
-      sizes,
-      sizesAttrs,
-      gender,
-      genderAttrs,
-      tags,
-      tagsAttrs,
-      images,
-      imagesAttrs,
-      errors,
-      //Getters
+      ...formv,
+      imageFiles,
+      isPending,
 
+      //Getters
       allSizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
 
       // Actions
+      onSubmit,
+      onFileChange,
+      temporalImageUrl: (imageFile: File) => {
+        return URL.createObjectURL(imageFile);
+      },
     };
   },
 });
